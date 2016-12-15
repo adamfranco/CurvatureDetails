@@ -1,3 +1,4 @@
 config = {
-  'database': "dbname=curvature user=username password=password host=localhost"
+  'database': "dbname=curvature user=username password=password host=localhost",
+  'CORS_allow_origin': '*',
 }

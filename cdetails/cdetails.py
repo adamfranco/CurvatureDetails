@@ -11,6 +11,10 @@ class Cdetails(object):
 
     def __init__(self, config):
         self.db = psycopg2.connect(config['database'])
+        if 'CORS_allow_origin' in config:
+            self.CORS_allow_origin = config['CORS_allow_origin']
+        else:
+            self.CORS_allow_origin = None;
         atexit.register(self.close_connections)
 
         self.url_map = Map([
@@ -49,7 +53,11 @@ class Cdetails(object):
         cur.execute(sql, (id,))
         segment['ways'] = cur.fetchall()
 
-        return Response(json.dumps(segment))
+        response = Response(json.dumps(segment))
+        if self.CORS_allow_origin:
+            response.headers["Access-Control-Allow-Origin"] = self.CORS_allow_origin
+            response.headers["Access-Control-Allow-Headers"] = "X-Requested-With"  # noqa
+        return response
 
 def create_app(config):
     app = Cdetails(config)

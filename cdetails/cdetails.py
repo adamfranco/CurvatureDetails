@@ -54,6 +54,7 @@ class Cdetails(object):
         segment['ways'] = cur.fetchall()
 
         response = Response(json.dumps(segment))
+        response.headers["Content-Type"] = "application/json; charset=utf-8"
         if self.CORS_allow_origin:
             response.headers["Access-Control-Allow-Origin"] = self.CORS_allow_origin
             response.headers["Access-Control-Allow-Headers"] = "X-Requested-With"  # noqa

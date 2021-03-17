@@ -41,14 +41,14 @@ class Cdetails(object):
         return self.wsgi_app(environ, start_response)
 
     def on_segment(self, request, id):
-        sql = "SELECT id, id_hash, name, curvature, paved, length, h.tag_value AS highway, s.tag_value surface FROM curvature_segments JOIN tags h ON fk_highway = h.tag_id JOIN tags s ON fk_surface = s.tag_id WHERE id_hash = %s"
+        sql = "SELECT id, id_hash, name, curvature, paved, length, h.tag_value AS highway, s.tag_value AS surface, sm.tag_value AS smoothness, m.tag_value AS maxspeed FROM curvature_segments JOIN tags h ON fk_highway = h.tag_id JOIN tags s ON fk_surface = s.tag_id LEFT JOIN tags sm ON fk_smoothness = sm.tag_id LEFT JOIN tags m ON fk_maxspeed = m.tag_id WHERE id_hash = %s"
         cur = self.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql, (id,))
         segment = cur.fetchone()
         if segment is None:
             raise NotFound('unknown id')
 
-        sql = "SELECT id, name, curvature, length, h.tag_value AS highway, s.tag_value surface, min_lon, max_lon, min_lat, max_lat FROM segment_ways JOIN tags h ON fk_highway = h.tag_id JOIN tags s ON fk_surface = s.tag_id WHERE fk_segment = %s ORDER BY position ASC"
+        sql = "SELECT id, name, curvature, length, h.tag_value AS highway, s.tag_value AS surface, sm.tag_value AS smoothness, m.tag_value AS maxspeed, min_lon, max_lon, min_lat, max_lat FROM segment_ways JOIN tags h ON fk_highway = h.tag_id JOIN tags s ON fk_surface = s.tag_id LEFT JOIN tags sm ON fk_smoothness = sm.tag_id LEFT JOIN tags m ON fk_maxspeed = m.tag_id WHERE fk_segment = %s ORDER BY position ASC"
         cur = self.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql, (segment['id'],))
         segment['ways'] = cur.fetchall()

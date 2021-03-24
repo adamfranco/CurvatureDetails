@@ -41,7 +41,7 @@ class Cdetails(object):
         return self.wsgi_app(environ, start_response)
 
     def on_segment(self, request, id):
-        sql = "SELECT id, id_hash, name, curvature, paved, length, h.tag_value AS highway, s.tag_value AS surface FROM curvature_segments JOIN tags h ON fk_highway = h.tag_id JOIN tags s ON fk_surface = s.tag_id WHERE id_hash = %s"
+        sql = "SELECT id, id_hash, name, curvature, paved, length FROM curvature_segments WHERE id_hash = %s"
         cur = self.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql, (id,))
         segment = cur.fetchone()
